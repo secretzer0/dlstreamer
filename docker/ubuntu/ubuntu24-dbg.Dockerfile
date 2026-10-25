@@ -458,6 +458,7 @@ USER dlstreamer
 
 # ==============================================================================
 FROM dlstreamer-dev AS deb-builder
+ARG OPENVINO_VERSION=2026.2.0
 # Building deb package for DL Streamer
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
@@ -509,7 +510,9 @@ COPY docker/ubuntu/debian /deb-pkg/debian
 RUN \
     sed -i -e "s/DLSTREAMER_VERSION/${DLSTREAMER_VERSION}/g" /deb-pkg/debian/changelog && \
     sed -i -e "s/CURRENT_DATE_TIME/$(date -R)/g" /deb-pkg/debian/changelog && \
-    sed -i -e "s/DLSTREAMER_VERSION/${DLSTREAMER_VERSION}/g" /deb-pkg/debian/control
+    sed -i -e "s/DLSTREAMER_VERSION/${DLSTREAMER_VERSION}/g" /deb-pkg/debian/control && \
+    sed -i -E "s/openvino-[0-9]+\.[0-9]+\.[0-9]+/openvino-${OPENVINO_VERSION}/g" /deb-pkg/debian/control && \
+    grep -o "openvino-[0-9.]*" /deb-pkg/debian/control
 
 WORKDIR /deb-pkg
 

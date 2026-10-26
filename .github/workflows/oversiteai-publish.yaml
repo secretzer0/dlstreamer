@@ -51,6 +51,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Probe registry write access before the long build
+        run: |
+          set -euo pipefail
+          printf 'FROM scratch\nLABEL probe=1\n' | docker buildx build --provenance=false \
+            --tag "${IMAGE}:ci-write-probe" --push -
+
       - name: Refuse to re-push an existing tag
         run: |
           set -euo pipefail

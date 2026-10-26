@@ -595,9 +595,18 @@ COPY --from=deb-builder /*.deb /debs/
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+# STRIP_DEBUG=1 drops the DWARF sections from the installed DL Streamer
+# libraries inside this same layer (165 MB of 173 MB), for the hub image;
+# 0 keeps them for the -dbg image. Same deb, same build.
+ARG STRIP_DEBUG=0
 RUN \
     apt-get update && \
     apt-get install -y -q --no-install-recommends ./debs/*.deb && \
+    if [ "$STRIP_DEBUG" = "1" ]; then \
+        apt-get install -y -q --no-install-recommends binutils=\* && \
+        find /opt/intel/dlstreamer/lib -name '*.so*' -type f -exec strip --strip-debug {} + && \
+        apt-get purge -y binutils && apt-get autoremove -y; \
+    fi && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/* && \
     rm -f /*.deb && \

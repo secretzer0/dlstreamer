@@ -1,9 +1,8 @@
-# Publishes the Ubuntu 26 DL Streamer runtime image that oversiteai-streaming's
-# Dockerfile.intel builds FROM. Fires on any oai/* tag. The image tag is derived,
-# not taken from the git tag: <upstream tag>-ov<OpenVINO>-<fork sha7>, so a tag
-# names one build and is never re-pushed (the job refuses if it already exists).
-# One build, two tags: <tag> = hub image (debug info stripped, 165 MB smaller),
-# <tag>-dbg = same build with symbols, for the harness and crash triage.
+# Publishes the Ubuntu 26 DL Streamer runtime image (Release build with debug
+# symbols kept) that oversiteai-streaming's Dockerfile.intel builds FROM.
+# Fires on an oai/* tag; the image tag is the git tag without the prefix, in
+# Intel's weekly form: oai/2026.3-20261025 -> :2026.3-20261025. A tag names
+# one build and is never re-pushed (the job refuses if it already exists).
 name: Publish ghcr.io/secretzer0/dlstreamer
 
 on:
@@ -34,6 +33,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0
           fetch-depth: 0
 
       - name: Derive the image tag

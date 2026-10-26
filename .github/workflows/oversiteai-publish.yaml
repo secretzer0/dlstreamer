@@ -23,13 +23,6 @@ jobs:
     # GitHub-hosted: 4 vCPU, 60-90 min. Rare, accepted (H 2026-10-25).
     runs-on: ubuntu-latest
     steps:
-      - name: Free runner disk
-        run: |
-          set -euo pipefail
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-          sudo docker image prune -af
-          df -h /
-
       - uses: actions/checkout@v4
         with:
           submodules: recursive
